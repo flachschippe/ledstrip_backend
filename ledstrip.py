@@ -6,7 +6,7 @@ import numpy as np
 class Animation:
     def __init__(self, ledstrip):
         self.ledstrip = ledstrip
-        self.pixel_data = [0] * self.ledstrip.get_pixel_count()
+        self.pixel_data = np.zeros((ledstrip.get_pixel_count(), 3), dtype=int)
 
     def increment(self):
         pass
@@ -15,12 +15,16 @@ class Walk(Animation):
     def __init__(self, ledstrip):
         Animation.__init__(self, ledstrip)
         self.counter = 0
+        self.pixel_data[0] = [1,0,0]
+        self.pixel_data[1] = [3,0,0]
+        self.pixel_data[2] = [10,0,0]
+        self.pixel_data[3] = [3,0,0]
+        self.pixel_data[4] = [1,0,0]
         pass
 
     def increment(self):
+        self.pixel_data = np.roll(self.pixel_data, 1, axis=0)
 
-        self.counter = self.count + 1 if self.count < self.ledstrip.get_pixel_count() else 0
-        self.pixel_data[self.counter] = Color(10, 10, 10)
 
 
 
@@ -44,15 +48,12 @@ class Ledstrip:
 
     def run_animation(self):
         while len(self.running_animations) > 0:
-            pixel_data_accu = [0] * self.get_pixel_count()
+            pixel_data_accu = np.zeros((self.get_pixel_count(),3), dtype=int)
             for animation in self.running_animations:
                 animation.increment()
-                pixel_count = 0
-                for pixel in animation.pixel_data:
-                    pixel_data_accu[pixel_count] = pixel
-                    pixel_count += 1
+                pixel_data_accu += animation.pixel_data
                 self.write_pixels(pixel_data_accu)
-                time.sleep(.5)
+                time.sleep(.05)
         pass
 
     def get_pixel_count(self):
@@ -67,7 +68,7 @@ class Ledstrip:
         with self.pixel_lock:
             ledno = 0
             for pixelvalue in pixeldata:
-                self.pixels[ledno] = pixelvalue
+                self.pixels[ledno] = Color(int(pixelvalue[0]), int(pixelvalue[1]), int(pixelvalue[2]))
                 ledno += 1
             self.strip.show()
 
