@@ -9,7 +9,7 @@ api = Api(TGS)
 ledstrip = Ledstrip(144, 18)
 
 walk = Walk(ledstrip)
-walk.start()
+
 class Led(Resource):
   def get(self, led):
     return jsonify({'message': 'hello world'}), 201
@@ -25,7 +25,17 @@ class Led(Resource):
     ledstrip.set_pixel(led, value)
     return args  , 201
 
+class Animation(Resource):
+
+  def put(self, animation_name):
+    parser = reqparse.RequestParser()
+    parser.add_argument("mode")
+    ledstrip.start_animation("walk")
+    args = parser.parse_args()
+    return {}  , 201
+
 api.add_resource(Led, "/led/<int:led>")
+api.add_resource(Animation, "/animation/<string:animation_name>")
 
 TGS.run(debug=True,port=8080,host="0.0.0.0")
 

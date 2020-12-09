@@ -1,18 +1,14 @@
 from rpi_ws281x import *
 import threading
 import time
+import numpy as np
 
 class Animation:
     def __init__(self, ledstrip):
         self.ledstrip = ledstrip
-        self.thread = threading.Thread(target=self.run_animation)
+        self.pixel_data = [0] * self.ledstrip.get_pixel_count()
 
-    def start(self):
-        self.thread.start()
-        while True:
-            self.run_animation()
-
-    def run_animation(self):
+    def increment(self):
         pass
 
 class Walk(Animation):
@@ -21,14 +17,11 @@ class Walk(Animation):
         self.counter = 0
         pass
 
-    def run_animation(self):
-        self.ledstrip.write_pixel(self.counter, Color(0,0,0))
-        if self.counter < self.ledstrip.get_pixel_count():
-            self.counter += 1
-            self.ledstrip.write_pixel(self.counter, Color(10, 10, 10))
-        else:
-            self.counter = 0
-        time.sleep(0.5)
+    def increment(self):
+
+        self.counter = self.count + 1 if self.count < self.ledstrip.get_pixel_count() else 0
+        self.pixel_data[self.counter] = Color(10, 10, 10)
+
 
 
 class Ledstrip:
@@ -38,6 +31,29 @@ class Ledstrip:
         self.strip.begin()
         self.pixels = self.strip.getPixels()
         self.pixel_lock = threading.Lock()
+        self.running_animations = []
+        self.available_animations = {"walk" : Walk(self)}
+        self.animation_runner = threading.Thread(target=self.run_animation)
+
+    def start_animation(self, animation_name):
+        animation = self.available_animations[animation_name]
+        assert(animation is not None)
+        self.running_animations.append(animation)
+        if not self.animation_runner.is_alive():
+            self.animation_runner.start()
+
+    def run_animation(self):
+        while len(self.running_animations) > 0:
+            pixel_data_accu = [0] * self.get_pixel_count()
+            for animation in self.running_animations:
+                animation.increment()
+                pixel_count = 0
+                for pixel in animation.pixel_data:
+                    pixel_data_accu[pixel_count] = pixel
+                    pixel_count += 1
+                self.write_pixels(pixel_data_accu)
+                time.sleep(.5)
+        pass
 
     def get_pixel_count(self):
         return self.pixel_count
