@@ -10,6 +10,7 @@ class Ledstrip(LedstripBase):
     def __init__(self, pixel_count):
         LedstripBase.__init__(self, pixel_count)
         self.__strip = PixelStrip(self._pixel_count, 18)
+        self.__pixel_count = pixel_count
         self.__strip.begin()
         self.__pixels = self.__strip.getPixels()
         self.__pixel_lock = threading.Lock()
@@ -24,4 +25,7 @@ class Ledstrip(LedstripBase):
             self.__strip.show()
 
     def delay(self):
-        time.sleep(.02)
+        time.sleep(.01)
+
+    def get_pixel_count(self):
+        return self.__pixel_count

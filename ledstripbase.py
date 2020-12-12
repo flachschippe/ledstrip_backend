@@ -10,3 +10,6 @@ class LedstripBase:
 
     def delay(self):
         pass
+
+    def get_pixel_count(self):
+        pass
