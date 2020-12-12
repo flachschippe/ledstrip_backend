@@ -1,14 +1,12 @@
-import time
 from flask import Flask, jsonify
 from flask_restful import Resource, reqparse, Api
-from ledstrip import *
+from ledstripcontroller import *
 
 TGS = Flask(__name__)
 api = Api(TGS)
 
-ledstrip = Ledstrip(144, 18)
+ledstrip = LedstripController(144, 18)
 
-walk = Walk(ledstrip)
 
 class Led(Resource):
   def get(self, led):
