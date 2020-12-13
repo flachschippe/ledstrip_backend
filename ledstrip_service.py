@@ -1,26 +1,40 @@
 import os
-
+from enum import Enum
 from flask import Flask, jsonify
 from flask_restful import Resource, reqparse, Api
 from ledstripcontroller import *
 from injector import Module, provider, Injector, inject, singleton
 
+from threadanimationrunner import ThreadAnimationRunner
+
 TGS = Flask(__name__)
 api = Api(TGS)
 
 
+class RunnerType(Enum):
+    BASE = 1,
+    THREAD = 2
+
+
+class LedstripType(Enum):
+    BASE = 1,
+    HARDWARE = 2
+
+
 class Configuration:
-    def __init__(self, ledstrip):
-        self.ledstrip = ledstrip
+    def __init__(self, pixel_count, ledstrip: LedstripType, animation_runner: RunnerType):
+        self.pixel_count = pixel_count
+        self.ledstrip_type = ledstrip
+        self.animation_runner_type = animation_runner
 
 
 def configure_for_test(binder):
-    configuration = Configuration(LedstripBase(144))
+    configuration = Configuration(100, LedstripType.BASE, RunnerType.THREAD)
     binder.bind(Configuration, to=configuration, scope=singleton)
 
+
 def configure_for_raspi(binder):
-    from ledstrip import Ledstrip
-    configuration = Configuration(Ledstrip(144))
+    configuration = Configuration(144, LedstripType.HARDWARE, RunnerType.THREAD)
     binder.bind(Configuration, to=configuration, scope=singleton)
 
 
@@ -28,7 +42,21 @@ class LedstripModule(Module):
     @singleton
     @provider
     def provide_ledstrip(self, configuration: Configuration) -> LedstripBase:
-        return configuration.ledstrip
+        if configuration.ledstrip_type == LedstripType.HARDWARE:
+            from ledstrip import Ledstrip
+            return Ledstrip(configuration.pixel_count)
+        elif configuration.ledstrip_type == LedstripType.BASE:
+            return LedstripBase(configuration.pixel_count)
+
+    @singleton
+    @provider
+    def provide_animation_runner(self, configuration: Configuration) -> AnimationRunnerBase:
+        if configuration.animation_runner_type == RunnerType.THREAD:
+            return ThreadAnimationRunner()
+        elif configuration.ledstrip_type == LedstripType.BASE:
+            return AnimationRunnerBase()
+
+
 
 if os.getenv("LOCATION") == "local":
     injector = Injector([configure_for_test, LedstripModule()])

@@ -24,8 +24,3 @@ class Ledstrip(LedstripBase):
                 ledno += 1
             self.__strip.show()
 
-    def delay(self):
-        time.sleep(.01)
-
-    def get_pixel_count(self):
-        return self.__pixel_count
