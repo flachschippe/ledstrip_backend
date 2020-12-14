@@ -9,3 +9,6 @@ class LedstripBase:
 
     def get_pixel_count(self):
         return self._pixel_count
+
+    def shutdown(self):
+        pass
