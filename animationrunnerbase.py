@@ -8,14 +8,14 @@ from ledstripbase import LedstripBase
 class AnimationRunnerBase:
     @inject
     def __init__(self):
-        self.__animations = []
+        self._animations = []
         self._ledstrip = None
 
     def is_running(self):
         return False;
 
     def add_animation(self, animation: Animation):
-        self.__animations.append(animation)
+        self._animations.append(animation)
 
     def start(self, ledstrip: LedstripBase):
         self._ledstrip = ledstrip
@@ -26,11 +26,11 @@ class AnimationRunnerBase:
 
     def _run_animation(self):
         pixel_data_accu = np.zeros((self._ledstrip.get_pixel_count(), 3), dtype=int)
-        for animation in self.__animations:
+        for animation in self._animations:
             animation.increment()
             pixel_data_accu += animation.get_pixel_data()
-            self._ledstrip.write_pixels(pixel_data_accu)
-            self._delay()
+        self._ledstrip.write_pixels(pixel_data_accu)
+        self._delay()
 
     def _delay(self):
         pass

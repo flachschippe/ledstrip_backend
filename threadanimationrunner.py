@@ -8,7 +8,7 @@ from ledstripbase import LedstripBase
 class ThreadAnimationRunner(AnimationRunnerBase):
     def __init__(self, update_rate_in_seconds):
         super().__init__()
-        self.__thread = threading.Thread(target=self.__run())
+        self.__thread = threading.Thread(target=self.__run)
         self.__update_rate_in_seconds = update_rate_in_seconds
 
     def is_running(self):
@@ -21,5 +21,5 @@ class ThreadAnimationRunner(AnimationRunnerBase):
         time.sleep(self.__update_rate_in_seconds)
 
     def __run(self):
-        while len(self.__animations) > 0:
+        while len(self._animations) > 0:
             self._run_animation()

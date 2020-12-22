@@ -6,12 +6,12 @@ class GifWriterLedstrip(LedstripBase):
     def __init__(self, pixel_count, update_rate):
         self.__update_rate = update_rate
         self._pixel_count = pixel_count
-        self.__led_size = 20
+        self.__led_size = 10
         self.__images = []
         pass
 
     def write_pixels(self, pixel_data):
-        image = Image.new('RGB', (self.__led_size * self._pixel_count + self._pixel_count, 21))
+        image = Image.new('RGB', (self.__led_size * self._pixel_count + self._pixel_count, 11))
         draw = ImageDraw.Draw(image)
         x = 0
         for pixel in pixel_data:

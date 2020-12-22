@@ -1,16 +1,15 @@
 import os
 from enum import Enum
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request, app, render_template
 from flask_restful import Resource, reqparse, Api
 
 from countinganimationrunner import CountingAnimationRunner
-from gifwriterledstrip import GifWriterLedstrip
 from ledstripcontroller import *
-from injector import Module, provider, Injector, inject, singleton
+from injector import Module, provider, Injector, singleton
 
 from threadanimationrunner import ThreadAnimationRunner
 
-TGS = Flask(__name__)
+TGS = Flask(__name__, static_folder="static")
 api = Api(TGS)
 
 
@@ -28,9 +27,9 @@ class LedstripType(Enum):
 
 class Configuration:
     def __init__(self, pixel_count, ledstrip: LedstripType, animation_runner: RunnerType):
-        self.animation_iterations = 200
+        self.animation_iterations = 800
         self.pixel_count = pixel_count
-        self.update_rate_in_seconds = .2
+        self.update_rate_in_seconds = .02
         self.ledstrip_type = ledstrip
         self.animation_runner_type = animation_runner
 
@@ -53,6 +52,7 @@ class LedstripModule(Module):
             from ledstrip import Ledstrip
             return Ledstrip(configuration.pixel_count)
         elif configuration.ledstrip_type == LedstripType.GIF:
+            from gifwriterledstrip import GifWriterLedstrip
             return GifWriterLedstrip(configuration.pixel_count, configuration.update_rate_in_seconds)
 
     @singleton
@@ -66,7 +66,6 @@ class LedstripModule(Module):
             return CountingAnimationRunner(configuration.animation_iterations)
 
 
-
 if os.getenv("LOCATION") == "local":
     injector = Injector([configure_for_test, LedstripModule()])
 else:
@@ -77,7 +76,7 @@ ledstrip = injector.get(LedstripController)
 
 class Led(Resource):
     def get(self, led):
-        return jsonify({'message': 'hello world'}), 201
+        return {'message': 'hello world'}, 201
 
     def put(self, led):
         parser = reqparse.RequestParser()
@@ -95,13 +94,12 @@ class Animation(Resource):
 
     def put(self, animation_name):
         parser = reqparse.RequestParser()
-        parser.add_argument("mode")
-        ledstrip.start_animation("walk")
-        args = parser.parse_args()
+        args = request.get_json()
+        print(args)
+        ledstrip.start_animation(animation_name)
         return {}, 201
 
 
 api.add_resource(Led, "/led/<int:led>")
 api.add_resource(Animation, "/animation/<string:animation_name>")
-
 TGS.run(debug=True, port=8080, host="0.0.0.0")

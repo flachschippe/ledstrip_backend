@@ -6,7 +6,7 @@ from animations.animation import Animation
 class Walk(Animation):
     def __init__(self, length):
         Animation.__init__(self, length)
-        self._init(40)
+        self._init(10)
         self.counter = 0
         dot_length = 3 * self._oversampling
         dot_color_red = np.interp(np.linspace(0, 2, dot_length), [0, 1, 2], [0, 100, 0])
