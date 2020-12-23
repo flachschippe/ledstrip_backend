@@ -1,13 +1,13 @@
 import os
 from enum import Enum
-from flask import Flask, jsonify, request, app, render_template
+from flask import Flask, request
 from flask_restful import Resource, reqparse, Api
 
-from countinganimationrunner import CountingAnimationRunner
+from animationrunner.countinganimationrunner import CountingAnimationRunner
 from ledstripcontroller import *
 from injector import Module, provider, Injector, singleton
 
-from threadanimationrunner import ThreadAnimationRunner
+from animationrunner.threadanimationrunner import ThreadAnimationRunner
 
 TGS = Flask(__name__, static_folder="static")
 api = Api(TGS)

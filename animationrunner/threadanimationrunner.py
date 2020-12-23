@@ -1,8 +1,7 @@
 import threading
 import time
 
-from animationrunnerbase import AnimationRunnerBase
-from ledstripbase import LedstripBase
+from animationrunner.animationrunnerbase import AnimationRunnerBase
 
 
 class ThreadAnimationRunner(AnimationRunnerBase):

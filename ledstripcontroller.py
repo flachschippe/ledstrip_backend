@@ -1,6 +1,6 @@
 from injector import inject
-from animationrunnerbase import AnimationRunnerBase
-from animations.walk import Walk
+from animationrunner.animationrunnerbase import AnimationRunnerBase
+from animations import Walk
 from ledstripbase import LedstripBase
 
 

@@ -1,8 +1,4 @@
-import threading
-import time
-
-from animationrunnerbase import AnimationRunnerBase
-from ledstripbase import LedstripBase
+from animationrunner import AnimationRunnerBase
 
 
 class CountingAnimationRunner(AnimationRunnerBase):

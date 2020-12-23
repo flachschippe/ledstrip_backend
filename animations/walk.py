@@ -1,6 +1,6 @@
 import numpy as np
 
-from animations.animation import Animation
+from animations import Animation
 
 
 class Walk(Animation):

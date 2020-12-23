@@ -1,5 +1,5 @@
 from injector import inject
-from animations.animation import Animation
+from animations import Animation
 import numpy as np
 
 from ledstripbase import LedstripBase
