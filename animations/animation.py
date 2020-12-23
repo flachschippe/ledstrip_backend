@@ -1,3 +1,5 @@
+import copy
+
 import numpy as np
 
 
@@ -20,3 +22,9 @@ class Animation:
 
     def get_parameters(self):
         return self._parameters
+
+    def get_name(self):
+        return str(self.__class__.__name__).lower()
+
+    def clone(self):
+        return copy.copy(self)

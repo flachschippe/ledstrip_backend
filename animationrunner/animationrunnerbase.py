@@ -6,7 +6,6 @@ from ledstripbase import LedstripBase
 
 
 class AnimationRunnerBase:
-    @inject
     def __init__(self):
         self._animations = []
         self._ledstrip = None
@@ -31,6 +30,9 @@ class AnimationRunnerBase:
             pixel_data_accu += animation.get_pixel_data()
         self._ledstrip.write_pixels(pixel_data_accu)
         self._delay()
+
+    def get_animations(self):
+        return self._animations
 
     def _delay(self):
         pass
