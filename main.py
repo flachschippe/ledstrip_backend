@@ -1,5 +1,7 @@
-
+from configuration import injector
+from ledstrip_service import LedstripService
 
 if __name__ == "__main__":
-    # execute only if run as a script
-    main()
+    ledstrip_service = injector.get(LedstripService)
+
+    ledstrip_service.run()
