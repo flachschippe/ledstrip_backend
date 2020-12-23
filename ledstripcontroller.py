@@ -16,16 +16,14 @@ class LedstripController:
     def start_animation(self, animation_name):
         animation = self.__available_animations[animation_name]
         assert(animation is not None)
-        self.__animation_runner.add_animation(animation.clone())
+        animation_id = self.__animation_runner.add_animation(animation.clone())
         if not self.__animation_runner.is_running():
             self.__animation_runner.start(self.__ledstrip)
+        return animation_id
 
-    def get_animations(self):
-        animations = {"available_animations":[], "active_animations":[]}
-        for animation in self.__available_animations.values():
-            animations["available_animations"].append({animation.get_name(): animation.get_parameters()})
+    def get_available_animations(self):
+        return self.__available_animations.values()
 
-        active_animations = self.__animation_runner.get_animations()
-        for animation in active_animations:
-            animations["active_animations"].append({animation.get_name(): animation.get_parameters()})
-        return animations
+    def get_active_animations(self):
+        return self.__animation_runner.get_animations()
+

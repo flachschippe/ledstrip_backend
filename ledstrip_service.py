@@ -44,16 +44,25 @@ class Animations(Resource):
         self.__ledstrip = ledstrip
 
     def get(self):
-        return self.__ledstrip.get_animations()
+        animations = {}
+        available_animations = {}
+        for animation in self.__ledstrip.get_available_animations():
+            available_animations[animation.get_name()] = animation.get_parameters()
+        animations["available_animations"] = available_animations
+
+        active_animations = {}
+        for animation_id, animation in self.__ledstrip.get_active_animations().items():
+            active_animations[animation_id] = {animation.get_name(): animation.get_parameters()}
+        animations["active_animations"] = active_animations
+        return animations
 
 
 class Animation(Resource):
     def __init__(self, ledstrip: LedstripBase):
         self.__ledstrip = ledstrip
 
-    def put(self, animation_name):
+    def post(self, animation_name):
         parser = reqparse.RequestParser()
         args = request.get_json()
-        print(args)
-        self.__ledstrip.start_animation(animation_name)
-        return {}, 201
+        animation_id = self.__ledstrip.start_animation(animation_name)
+        return {"animation_id": animation_id}, 201
