@@ -32,10 +32,12 @@ class Configuration:
         self.update_rate_in_seconds = .02
         self.ledstrip_type = ledstrip
         self.animation_runner_type = animation_runner
+        self.port = 8080
 
 
 def configure_for_test(binder):
     configuration = Configuration(25, LedstripType.GIF, RunnerType.COUNTING)
+    configuration.port = 8081
     binder.bind(Configuration, to=configuration, scope=singleton)
 
 
@@ -90,6 +92,11 @@ class Led(Resource):
         return args, 201
 
 
+class Animations(Resource):
+    def get(self):
+        return ledstrip.get_animations()
+
+
 class Animation(Resource):
 
     def put(self, animation_name):
@@ -102,4 +109,5 @@ class Animation(Resource):
 
 api.add_resource(Led, "/led/<int:led>")
 api.add_resource(Animation, "/animation/<string:animation_name>")
+api.add_resource(Animations, "/animations")
 TGS.run(debug=True, port=8080, host="0.0.0.0")

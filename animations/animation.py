@@ -5,6 +5,7 @@ class Animation:
     def __init__(self, length):
         self._length = length
         self._oversampling = 1
+        self._parameters = {}
 
     def _init(self, oversampling=1):
         self._oversampling = oversampling
@@ -16,3 +17,6 @@ class Animation:
     def get_pixel_data(self):
         reshaped_pixel_data = self._pixel_data.reshape((3, -1, self._oversampling))
         return reshaped_pixel_data.mean(axis=2).T.astype(int)
+
+    def get_parameters(self):
+        return self._parameters
