@@ -13,10 +13,12 @@ class LedstripController:
         self.__available_animations = {walk.get_name(): walk}
         self.__animation_runner = animation_runner
 
-    def start_animation(self, animation_name):
+    def start_animation(self, animation_name, parameters):
         animation = self.__available_animations[animation_name]
         assert(animation is not None)
-        animation_id = self.__animation_runner.add_animation(animation.clone())
+        new_animation = animation.clone()
+        new_animation.set_parameters(parameters)
+        animation_id = self.__animation_runner.add_animation(new_animation)
         if not self.__animation_runner.is_running():
             self.__animation_runner.start(self.__ledstrip)
         return animation_id

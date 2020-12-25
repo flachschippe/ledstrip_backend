@@ -12,13 +12,19 @@ class LedstripService:
         self.__flask_app = flask_app
         self.__api = Api(flask_app)
         self.__config = config
+        self.__flask_app.after_request(LedstripService.set_header)
         self.__api.add_resource(Led, "/led/<int:led>", resource_class_args= [self.__ledstrip])
         self.__api.add_resource(Animation, "/animation/<string:animation_name>", resource_class_args=[self.__ledstrip])
         self.__api.add_resource(Animations, "/animations", resource_class_args=[self.__ledstrip])
 
+
     def run(self):
         self.__flask_app.run(debug=self.__config.debug, port=self.__config.port, host=self.__config.ip)
 
+    @staticmethod
+    def set_header(response):
+        response.headers["Access-Control-Allow-Origin"] = "*"
+        return response
 
 class Led(Resource):
     def __init__(self, ledstrip: LedstripBase):
@@ -45,14 +51,14 @@ class Animations(Resource):
 
     def get(self):
         animations = {}
-        available_animations = {}
+        available_animations = []
         for animation in self.__ledstrip.get_available_animations():
-            available_animations[animation.get_name()] = animation.get_parameters()
+            available_animations.append({"name": animation.get_name(), "parameters": animation.get_parameters()})
         animations["available_animations"] = available_animations
 
-        active_animations = {}
+        active_animations = []
         for animation_id, animation in self.__ledstrip.get_active_animations().items():
-            active_animations[animation_id] = {animation.get_name(): animation.get_parameters()}
+            active_animations.append({"name": animation.get_name(), "parameters": animation.get_parameters()})
         animations["active_animations"] = active_animations
         return animations
 
@@ -63,6 +69,6 @@ class Animation(Resource):
 
     def post(self, animation_name):
         parser = reqparse.RequestParser()
-        args = request.get_json()
-        animation_id = self.__ledstrip.start_animation(animation_name)
+        parameters = request.get_json()
+        animation_id = self.__ledstrip.start_animation(animation_name, parameters)
         return {"animation_id": animation_id}, 201

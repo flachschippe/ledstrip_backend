@@ -1,4 +1,5 @@
-from injector import inject
+import threading
+
 from animations import Animation
 import numpy as np
 
@@ -10,12 +11,14 @@ class AnimationRunnerBase:
         self._animations = {}
         self.__next_animation_id = 0
         self._ledstrip = None
+        self._lock = threading.Lock()
 
     def is_running(self):
-        return False;
+        return False
 
     def add_animation(self, animation: Animation):
-        self._animations[self.__next_animation_id] = animation
+        with self._lock:
+            self._animations[self.__next_animation_id] = animation
         new_animation_id = self.__next_animation_id
         self.__next_animation_id += 1
         return new_animation_id
@@ -29,9 +32,10 @@ class AnimationRunnerBase:
 
     def _run_animation(self):
         pixel_data_accu = np.zeros((self._ledstrip.get_pixel_count(), 3), dtype=int)
-        for animation in self._animations.values():
-            animation.increment()
-            pixel_data_accu += animation.get_pixel_data()
+        with self._lock:
+            for animation in self._animations.values():
+                animation.increment()
+                pixel_data_accu += animation.get_pixel_data()
         self._ledstrip.write_pixels(pixel_data_accu)
         self._delay()
 

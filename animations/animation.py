@@ -6,12 +6,14 @@ import numpy as np
 class Animation:
     def __init__(self, length):
         self._length = length
-        self._oversampling = 1
-        self._parameters = {}
+        self._parameters = self._get_default_parameters()
 
-    def _init(self, oversampling=1):
-        self._oversampling = oversampling
+    def _init(self):
+        self._oversampling = self._parameters["oversampling"]
         self._pixel_data = np.zeros((3, self._length * self._oversampling), dtype=int)
+
+    def _get_default_parameters(self):
+        return {"oversampling": 1}
 
     def increment(self):
         pass
@@ -22,6 +24,14 @@ class Animation:
 
     def get_parameters(self):
         return self._parameters
+
+    def set_parameters(self, parameters):
+        default_parameters = self._get_default_parameters()
+        for parameter in default_parameters.keys():
+            if parameter not in parameters:
+                parameters[parameter] = default_parameters[parameter]
+        self._parameters = parameters
+        self._init()
 
     def get_name(self):
         return str(self.__class__.__name__).lower()
