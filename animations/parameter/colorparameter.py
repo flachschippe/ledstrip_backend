@@ -8,7 +8,7 @@ class ColorParameter(ParameterBase):
 
     @staticmethod
     def from_string(value_as_string):
-        color = (int(value_as_string[-6:-5], 16), int(value_as_string[-4:-3], 16), int(value_as_string[-2:], 16))
+        color = (int(value_as_string[-6:-4], 16), int(value_as_string[-4:-2], 16), int(value_as_string[-2:], 16))
         return ColorParameter(color)
 
     def __str__(self):
