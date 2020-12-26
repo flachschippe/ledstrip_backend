@@ -1,6 +1,8 @@
 from flask import Flask, request
 from flask_restful import Resource, reqparse, Api
 
+from animations.parameter.colorparameter import ColorParameter
+from animations.parameter.integerparameter import IntegerParameter
 from configuration import Configuration
 from ledstripcontroller import *
 
@@ -69,6 +71,13 @@ class Animation(Resource):
 
     def post(self, animation_name):
         parser = reqparse.RequestParser()
-        parameters = request.get_json()
+        args = request.get_json()
+
+        parameters = {}
+        for name, parameter in args.items():
+            if parameter["type"] == "integer":
+                parameters[name] = IntegerParameter.from_string(parameter["value"])
+            if parameter["type"] == "color":
+                parameters[name] = ColorParameter.from_string(parameter["value"])
         animation_id = self.__ledstrip.start_animation(animation_name, parameters)
         return {"animation_id": animation_id}, 201
