@@ -2,6 +2,8 @@ import copy
 
 import numpy as np
 
+from animations.parameter.integerparameter import IntegerParameter
+
 
 class Animation:
     def __init__(self, length):
@@ -9,11 +11,11 @@ class Animation:
         self._parameters = self._get_default_parameters()
 
     def _init(self):
-        self._oversampling = self._parameters["oversampling"]
+        self._oversampling = self._parameters["oversampling"].get_value()
         self._pixel_data = np.zeros((3, self._length * self._oversampling), dtype=int)
 
     def _get_default_parameters(self):
-        return {"oversampling": 1}
+        return {"oversampling": IntegerParameter(1)}
 
     def increment(self):
         pass

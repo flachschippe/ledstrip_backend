@@ -53,12 +53,12 @@ class Animations(Resource):
         animations = {}
         available_animations = []
         for animation in self.__ledstrip.get_available_animations():
-            available_animations.append({"name": animation.get_name(), "parameters": animation.get_parameters()})
+            available_animations.append({"name": animation.get_name(), "parameters": {n: p.to_dict() for n, p in animation.get_parameters().items()}})
         animations["available_animations"] = available_animations
 
         active_animations = []
         for animation_id, animation in self.__ledstrip.get_active_animations().items():
-            active_animations.append({"name": animation.get_name(), "parameters": animation.get_parameters()})
+            active_animations.append({"name": animation.get_name(), "parameters": {n: p.to_dict() for n, p in animation.get_parameters().items()}})
         animations["active_animations"] = active_animations
         return animations
 
