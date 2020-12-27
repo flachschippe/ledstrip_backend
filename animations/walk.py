@@ -18,7 +18,7 @@ class Walk(Animation):
     def _init(self):
         Animation._init(self)
         dot_length = self._parameters["dot_size"].get_value() * self._oversampling
-        dot = np.interp(np.linspace(0, 2, dot_length), [0, 1, 2], [0, 100, 0])
+        dot = np.interp(np.linspace(0, 2, dot_length), [0, 1, 2], [0, 1, 0])
         red, green, blue = self._parameters["color"].get_value()
         point = np.array([dot * red, dot * green, dot * blue], dtype=int)
         self._pixel_data[:, 0:dot_length] = point

@@ -15,10 +15,9 @@ class LedstripService:
         self.__api = Api(flask_app)
         self.__config = config
         self.__flask_app.after_request(LedstripService.set_header)
-        self.__api.add_resource(Led, "/led/<int:led>", resource_class_args= [self.__ledstrip])
-        self.__api.add_resource(Animation, "/animation/<string:animation_name>", resource_class_args=[self.__ledstrip])
+        self.__api.add_resource(Led, "/led/<int:led>", resource_class_args=[self.__ledstrip])
+        self.__api.add_resource(Animation, "/animation", resource_class_args=[self.__ledstrip])
         self.__api.add_resource(Animations, "/animations", resource_class_args=[self.__ledstrip])
-
 
     def run(self):
         self.__flask_app.run(debug=self.__config.debug, port=self.__config.port, host=self.__config.ip)
@@ -26,7 +25,9 @@ class LedstripService:
     @staticmethod
     def set_header(response):
         response.headers["Access-Control-Allow-Origin"] = "*"
+        response.headers["Access-Control-Allow-Headers"] = "*"
         return response
+
 
 class Led(Resource):
     def __init__(self, ledstrip: LedstripBase):
@@ -55,12 +56,14 @@ class Animations(Resource):
         animations = {}
         available_animations = []
         for animation in self.__ledstrip.get_available_animations():
-            available_animations.append({"name": animation.get_name(), "parameters": {n: p.to_dict() for n, p in animation.get_parameters().items()}})
+            available_animations.append({"name": animation.get_name(),
+                                         "parameters": {n: p.to_dict() for n, p in animation.get_parameters().items()}})
         animations["available_animations"] = available_animations
 
         active_animations = []
         for animation_id, animation in self.__ledstrip.get_active_animations().items():
-            active_animations.append({"name": animation.get_name(), "parameters": {n: p.to_dict() for n, p in animation.get_parameters().items()}})
+            active_animations.append({"name": animation.get_name(),
+                                      "parameters": {n: p.to_dict() for n, p in animation.get_parameters().items()}})
         animations["active_animations"] = active_animations
         return animations
 
@@ -69,15 +72,16 @@ class Animation(Resource):
     def __init__(self, ledstrip: LedstripBase):
         self.__ledstrip = ledstrip
 
-    def post(self, animation_name):
-        parser = reqparse.RequestParser()
+    def post(self):
         args = request.get_json()
 
+        request_parameters = args["parameters"]
         parameters = {}
-        for name, parameter in args.items():
+        animation_name = args["name"]
+        for parameter_name, parameter in request_parameters.items():
             if parameter["type"] == "integer":
-                parameters[name] = IntegerParameter.from_string(parameter["value"])
+                parameters[parameter_name] = IntegerParameter.from_string(parameter["value"])
             if parameter["type"] == "color":
-                parameters[name] = ColorParameter.from_string(parameter["value"])
+                parameters[parameter_name] = ColorParameter.from_string(parameter["value"])
         animation_id = self.__ledstrip.start_animation(animation_name, parameters)
         return {"animation_id": animation_id}, 201
