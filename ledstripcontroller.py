@@ -23,6 +23,9 @@ class LedstripController:
             self.__animation_runner.start(self.__ledstrip)
         return animation_id
 
+    def remove_animation(self, animation_id):
+        self.__animation_runner.remove_animation(animation_id)
+
     def get_available_animations(self):
         return self.__available_animations.values()
 

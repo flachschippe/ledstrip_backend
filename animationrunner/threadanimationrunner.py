@@ -20,5 +20,5 @@ class ThreadAnimationRunner(AnimationRunnerBase):
         time.sleep(self.__update_rate_in_seconds)
 
     def __run(self):
-        while len(self._animations) > 0:
+        while True:
             self._run_animation()

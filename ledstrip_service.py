@@ -16,7 +16,7 @@ class LedstripService:
         self.__config = config
         self.__flask_app.after_request(LedstripService.set_header)
         self.__api.add_resource(Led, "/led/<int:led>", resource_class_args=[self.__ledstrip])
-        self.__api.add_resource(Animation, "/animation", resource_class_args=[self.__ledstrip])
+        self.__api.add_resource(Animation, "/animation/<int:id>", "/animation", resource_class_args=[self.__ledstrip])
         self.__api.add_resource(Animations, "/animations", resource_class_args=[self.__ledstrip])
 
     def run(self):
@@ -26,6 +26,7 @@ class LedstripService:
     def set_header(response):
         response.headers["Access-Control-Allow-Origin"] = "*"
         response.headers["Access-Control-Allow-Headers"] = "*"
+        response.headers["Access-Control-Allow-Methods"] = "*"
         return response
 
 
@@ -62,7 +63,8 @@ class Animations(Resource):
 
         active_animations = []
         for animation_id, animation in self.__ledstrip.get_active_animations().items():
-            active_animations.append({"name": animation.get_name(),
+            active_animations.append({"id": animation_id,
+                                      "name": animation.get_name(),
                                       "parameters": {n: p.to_dict() for n, p in animation.get_parameters().items()}})
         animations["active_animations"] = active_animations
         return animations
@@ -85,3 +87,7 @@ class Animation(Resource):
                 parameters[parameter_name] = ColorParameter.from_string(parameter["value"])
         animation_id = self.__ledstrip.start_animation(animation_name, parameters)
         return {"animation_id": animation_id}, 201
+
+    def delete(self, id):
+        self.__ledstrip.remove_animation(id)
+        return {"animation_id": id}, 201

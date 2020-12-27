@@ -23,6 +23,11 @@ class AnimationRunnerBase:
         self.__next_animation_id += 1
         return new_animation_id
 
+    def remove_animation(self, animation_id):
+        with self._lock:
+            del(self._animations[animation_id])
+        return animation_id
+
     def start(self, ledstrip: LedstripBase):
         self._ledstrip = ledstrip
         self._start()
