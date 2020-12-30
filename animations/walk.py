@@ -7,7 +7,7 @@ from animations.parameter.integerparameter import IntegerParameter
 
 class Walk(Animation):
     def __init__(self, length):
-        Animation.__init__(self, length)
+        super().__init__(length)
         self.counter = 0
         self._init()
         pass
@@ -24,6 +24,6 @@ class Walk(Animation):
         self._pixel_data[:, 0:dot_length] = point
 
     def _get_default_parameters(self):
-        return {"dot_size": IntegerParameter(3),
+        return {"dot_size": IntegerParameter(3, 1, self._length),
                 "color": ColorParameter([0x10, 0x00, 0x00]),
-                "oversampling": IntegerParameter(10)}
+                "oversampling": IntegerParameter(10, 1, 50)}

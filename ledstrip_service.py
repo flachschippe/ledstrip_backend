@@ -88,6 +88,6 @@ class Animation(Resource):
         animation_id = self.__ledstrip.start_animation(animation_name, parameters)
         return {"animation_id": animation_id}, 201
 
-    def delete(self, id):
-        self.__ledstrip.remove_animation(id)
-        return {"animation_id": id}, 201
+    def delete(self, animation_id):
+        self.__ledstrip.remove_animation(animation_id)
+        return {"animation_id": animation_id}, 201
