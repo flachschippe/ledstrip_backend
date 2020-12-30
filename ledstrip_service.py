@@ -15,8 +15,7 @@ class LedstripService:
         self.__api = Api(flask_app)
         self.__config = config
         self.__flask_app.after_request(LedstripService.set_header)
-        self.__api.add_resource(Led, "/led/<int:led>", resource_class_args=[self.__ledstrip])
-        self.__api.add_resource(Animation, "/animation/<int:id>", "/animation", resource_class_args=[self.__ledstrip])
+        self.__api.add_resource(Animation, "/animation/<int:animation_id>", "/animation", resource_class_args=[self.__ledstrip])
         self.__api.add_resource(Animations, "/animations", resource_class_args=[self.__ledstrip])
 
     def run(self):
@@ -28,25 +27,6 @@ class LedstripService:
         response.headers["Access-Control-Allow-Headers"] = "*"
         response.headers["Access-Control-Allow-Methods"] = "*"
         return response
-
-
-class Led(Resource):
-    def __init__(self, ledstrip: LedstripBase):
-        self.__ledstrip = ledstrip
-
-    def get(self, led):
-        return {'message': 'hello world'}, 201
-
-    def put(self, led):
-        parser = reqparse.RequestParser()
-        parser.add_argument("red")
-        parser.add_argument("green")
-        parser.add_argument("blue")
-        args = parser.parse_args()
-        print(args)
-        value = Color(int(args["red"]), int(args["green"]), int(args["blue"]))
-        self.__ledstrip.set_pixel(led, value)
-        return args, 201
 
 
 class Animations(Resource):
