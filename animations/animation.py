@@ -29,9 +29,9 @@ class Animation:
 
     def set_parameters(self, parameters):
         default_parameters = self._get_default_parameters()
-        for parameter in default_parameters.keys():
-            if parameter not in parameters:
-                parameters[parameter] = default_parameters[parameter]
+        for default_parameter_name in default_parameters.keys():
+            if default_parameter_name not in parameters:
+                parameters[default_parameter_name] = default_parameters[default_parameter_name]
         self._parameters = parameters
         self._init()
 

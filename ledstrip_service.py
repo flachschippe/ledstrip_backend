@@ -60,11 +60,11 @@ class Animation(Resource):
         request_parameters = args["parameters"]
         parameters = {}
         animation_name = args["name"]
-        for parameter_name, parameter in request_parameters.items():
+        for parameter in request_parameters:
             if parameter["type"] == "integer":
-                parameters[parameter_name] = IntegerParameter.from_string(parameter["value"])
+                parameters[parameter["name"]] = IntegerParameter.from_string(parameter["value"])
             if parameter["type"] == "color":
-                parameters[parameter_name] = ColorParameter.from_string(parameter["value"])
+                parameters[parameter["name"]] = ColorParameter.from_string(parameter["value"])
         animation_id = self.__ledstrip.start_animation(animation_name, parameters)
         return {"animation_id": animation_id}, 201
 
