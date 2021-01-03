@@ -15,7 +15,7 @@ class Animation:
         self._pixel_data = np.zeros((3, self._length * self._oversampling), dtype=int)
 
     def _get_default_parameters(self):
-        return {"oversampling": IntegerParameter(1)}
+        return {"oversampling": IntegerParameter(1, 1, 10)}
 
     def increment(self):
         pass

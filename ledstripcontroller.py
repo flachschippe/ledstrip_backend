@@ -1,6 +1,7 @@
 from injector import inject
 from animationrunner.animationrunnerbase import AnimationRunnerBase
 from animations import Walk
+from animations import Sine
 from ledstripbase import LedstripBase
 
 
@@ -10,7 +11,8 @@ class LedstripController:
         self.__pixel_count = ledstrip.get_pixel_count()
         self.__ledstrip = ledstrip
         walk = Walk(self.__pixel_count)
-        self.__available_animations = {walk.get_name(): walk, "w2": walk}
+        sine = Sine(self.__pixel_count)
+        self.__available_animations = {walk.get_name(): walk, sine.get_name(): sine}
         self.__animation_runner = animation_runner
 
     def start_animation(self, animation_name, parameters):
