@@ -14,6 +14,12 @@ class IntegerParameter(ParameterBase):
     def from_string(value_as_string):
         return IntegerParameter(int(value_as_string))
 
+    def set_value(self, value):
+        if value < self._minimum or value > self._maximum:
+            raise ValueError()
+        else:
+            super().set_value(value)
+
     def get_type(self):
         return "integer"
 

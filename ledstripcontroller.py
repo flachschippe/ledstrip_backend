@@ -10,7 +10,7 @@ class LedstripController:
         self.__pixel_count = ledstrip.get_pixel_count()
         self.__ledstrip = ledstrip
         walk = Walk(self.__pixel_count)
-        self.__available_animations = {walk.get_name(): walk}
+        self.__available_animations = {walk.get_name(): walk, "w2": walk}
         self.__animation_runner = animation_runner
 
     def start_animation(self, animation_name, parameters):
